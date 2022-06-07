@@ -3,3 +3,6 @@ slate
 
 *.css
 *.css.map
+
+node_modules/
+*.js

@@ -1,3 +1,4 @@
+// @ts-nocheck
 let canvas = document.getElementById("table-main");
 let context = canvas.getContext("2d");
 
