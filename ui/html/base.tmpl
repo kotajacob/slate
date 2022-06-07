@@ -1,0 +1,18 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{{template "title" .}} - Slate VTT</title>
+	<link rel='stylesheet' href='/static/css/main.css'>
+	<link rel='shortcut icon' href='/static/img/favicon.ico'>
+</head>
+<body>
+	<main>
+		{{- template "main" . -}}
+	</main>
+	<script src='/static/script/library/konva.min.js'></script>
+	<script src='/static/script/main.js'></script>
+</body>
+</html>
+{{end}}
