@@ -1,10 +1,21 @@
 import { Vector2 } from "./modules/area_tools";
+import { Piece, Stack } from "./modules/pieces";
+import { ws } from "./modules/ws_tools";
 
 let canvas = document.getElementById("table-main") as HTMLCanvasElement;
 let context = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+let tableContents: (Piece|Stack)[] = [];
+
+async function populateTable() {
+	tableContents = await ws.get();
+	console.log(tableContents);
+}
+
+populateTable();
 
 let handle: any = {
 	radius: 20,
@@ -24,11 +35,16 @@ handle.boundary.rect(
 
 let offset = new Vector2(0, 0);
 
-animate();
+main();
 
 function render() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
+	context.fillStyle = "#448866";
+	context.fillRect(0, 0, canvas.width, canvas.height);
 
+	for (let tableItem of tableContents) {
+		context.drawImage(tableItem.image, tableItem.x, tableItem.y);
+	}
 	context.fillStyle = "#333333";
 	context.beginPath();
 	context.arc(handle.x, handle.y, handle.radius, 0, Math.PI * 2, false);
@@ -75,7 +91,7 @@ function onMouseUp(event: MouseEvent) {
 	handle.grabbed = false;
 }
 
-function animate() {
+function main() {
 	render();
-	requestAnimationFrame(animate);
+	requestAnimationFrame(main);
 }
