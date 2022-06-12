@@ -13,12 +13,13 @@ sass:
 	sassc ui/sass/main.sass ui/static/css/main.css
 
 ts:
+	npx tsc -noEmit
 	npx esbuild ui/ts/main.ts --sourcemap --minify --bundle --outfile=ui/static/js/main.js
 
 clean:
 	rm -f slate
-	rm -rf /ui/static/css/
-	rm -rf /ui/static/js/
+	rm -rf ui/static/css/
+	rm -rf ui/static/js/
 
 watch:
 	mkdir -p ui/static/css/
