@@ -7,6 +7,7 @@ export class Piece {
 	url: string;
 	position: Vector2;
 	boundary: Rectangle;
+	image: HTMLImageElement;
 
 	// Add this.x and this.y which reference this.position
 	get x() {
@@ -39,6 +40,8 @@ export class Piece {
 			w: wBoundary,
 			h: hBoundary,
 		}
+		this.image = new Image();
+		this.image.src = this.url;
 	}
 }
 
@@ -48,8 +51,9 @@ export class Piece {
  */
 export class Stack {
 	contents: (Piece|Stack)[];
-	position: Vector2;
-	boundary: Rectangle;
+	position: Vector2 = new Vector2(0, 0);
+	boundary: Rectangle = {x: 0, y: 0, w: 0, h: 0};
+	image: HTMLImageElement = new Image();
 
 	// Pass url through to first contents child
 	get url(): string {
@@ -85,31 +89,32 @@ export class Stack {
 			return;
 		}
 		this.contents.unshift(child);
-		this.position = this.contents[0].position;
-		this.boundary = this.contents[0].boundary;
+		this.#syncProperties();
 	}
 	removeChild(index: number) {
 		this.contents.slice(index, 1);
+		if (index === 0) {
+			this.#syncProperties();
+		}
+	}
+
+	// Add a private method for synchronizing the relevant properties with
+	// the first contents child's
+	#syncProperties() {
 		if (this.contents.length > 0) {
-			if (index === 0) {
-				this.position = this.contents[0].position;
-				this.boundary = this.contents[0].boundary;
-			}
+			this.position = this.contents[0].position;
+			this.boundary = this.contents[0].boundary;
+			this.image    = this.contents[0].image;
 		} else {
 			this.position = new Vector2(0, 0);
 			this.boundary = {x: 0, y: 0, w: 0, h: 0};
+			this.image    = new Image();
 		}
 	}
 
 	constructor(contents: (Piece|Stack)[]) {
 		this.contents = contents;
-		if (this.contents.length > 0) {
-			this.position = this.contents[0].position;
-			this.boundary = this.contents[0].boundary;
-		} else {
-			this.position = new Vector2(0, 0);
-			this.boundary = {x: 0, y: 0, w: 0, h: 0};
-		}
+		this.#syncProperties();
 	}
 }
 
