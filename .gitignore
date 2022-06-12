@@ -6,3 +6,4 @@ slate
 
 node_modules/
 *.js
+*.js.map
