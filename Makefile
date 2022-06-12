@@ -13,7 +13,7 @@ sass:
 	sassc ui/sass/main.sass ui/static/css/main.css
 
 ts:
-	npx esbuild ui/ts/main.ts --bundle --outfile=ui/static/js/main.js
+	npx esbuild ui/ts/main.ts --sourcemap --minify --bundle --outfile=ui/static/js/main.js
 
 clean:
 	rm -f slate
