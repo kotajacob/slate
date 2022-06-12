@@ -1,10 +1,12 @@
-let canvas = document.getElementById("table-main");
-let context = canvas.getContext("2d");
+import { Vector2 } from "./modules/area_tools";
+
+let canvas = document.getElementById("table-main") as HTMLCanvasElement;
+let context = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let handle = {
+let handle: any = {
 	radius: 20,
 	x: canvas.width / 2,
 	y: canvas.height / 2,
@@ -20,7 +22,7 @@ handle.boundary.rect(
 	handle.radius * 2
 );
 
-let offset = {};
+let offset = new Vector2(0, 0);
 
 animate();
 
@@ -55,7 +57,7 @@ canvas.addEventListener("mousedown", function (event) {
 	}
 });
 
-function onMouseMove(event) {
+function onMouseMove(event: MouseEvent) {
 	handle.x = event.clientX - offset.x;
 	handle.y = event.clientY - offset.y;
 	handle.boundary = new Path2D();
@@ -67,7 +69,7 @@ function onMouseMove(event) {
 	);
 }
 
-function onMouseUp(event) {
+function onMouseUp(event: MouseEvent) {
 	canvas.removeEventListener("mousemove", onMouseMove);
 	canvas.removeEventListener("mouseup", onMouseUp);
 	handle.grabbed = false;

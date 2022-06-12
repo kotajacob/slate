@@ -1,0 +1,25 @@
+{
+  "name": "slate",
+  "version": "1.0.0",
+  "description": "## running To build a binary and run Slate manually: ``` make ./slate ``` This serves `Slate VTT` over http://localhost:4000",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@git.sr.ht/~kota/slate.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://todo.sr.ht/~kota/slate"
+  },
+  "homepage": "https://git.sr.ht/~kota/slate#readme",
+  "devDependencies": {
+    "esbuild": "^0.14.43"
+  }
+}
