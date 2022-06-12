@@ -20,6 +20,6 @@
   },
   "homepage": "https://git.sr.ht/~kota/slate#readme",
   "devDependencies": {
-    "typescript": "^4.7.3"
+    "esbuild": "^0.14.43"
   }
 }
