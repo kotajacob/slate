@@ -1,13 +1,20 @@
 /**
+ * Rectangle
+ * x, y, (w)idth, and (h)eight
+ */
+export interface Rectangle {
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+}
+
+/**
  * 2 dimentional vector
  */
 export class Vector2 {
 	x: number = 0;
 	y: number = 0;
-	constructor(x: number, y: number) {
-		this.x = x;
-		this.y = y;
-	}
 	/**
 	 * Length of the vector
 	 */
@@ -35,5 +42,9 @@ export class Vector2 {
 			return radianDirection * 180 / Math.PI;
 		}
 		return radianDirection;
+	}
+	constructor(x: number, y: number) {
+		this.x = x;
+		this.y = y;
 	}
 }
