@@ -8,6 +8,8 @@ export class Piece {
 	position: Vector2;
 	boundary: Rectangle;
 	image: HTMLImageElement;
+	w: number;
+	h: number;
 
 	// Add this.x and this.y which reference this.position
 	get x() {
@@ -23,25 +25,48 @@ export class Piece {
 		this.position.y = y;
 	}
 
+	/**
+	 * Create a piece  
+	 * Unset or 0 (w)idth and (h)eight will use the image defaults  
+	 * Unset or 0 boundaries will default to 0, 0, (w)idth, (h)eight
+	 */
 	constructor(
 		url: string,
 		x: number = 0,
 		y: number = 0,
-		xBoundary: number,
-		yBoundary: number,
-		wBoundary: number,
-		hBoundary: number,
+		w: number = 0,
+		h: number = 0,
+		xBoundary: number = 0,
+		yBoundary: number = 0,
+		wBoundary: number = w,
+		hBoundary: number = h,
 	) {
 		this.url = url;
+		this.image = new Image();
+		this.image.src = this.url;
 		this.position = new Vector2(x, y);
+		if (w) {
+			this.w = w;
+		} else {
+			this.w = this.image.naturalWidth;
+		}
+		if (h) {
+			this.h = h;
+		} else {
+			this.h = this.image.naturalHeight;
+		}
 		this.boundary = {
 			x: xBoundary,
 			y: yBoundary,
 			w: wBoundary,
 			h: hBoundary,
 		}
-		this.image = new Image();
-		this.image.src = this.url;
+		if (this.boundary.w === 0) {
+			this.boundary.w = this.w;
+		}
+		if (this.boundary.h === 0) {
+			this.boundary.h = this.h;
+		}
 	}
 }
 
@@ -80,6 +105,30 @@ export class Stack {
 	}
 	set y(y: number) {
 		this.position.y = y;
+	}
+
+	// Pass (w)idth and (h)eight through to first contents child
+	get w(): number {
+		if (this.contents[0]) {
+			return this.contents[0].w;
+		}
+		return 0;
+	}
+	set w(w: number) {
+		if (this.contents[0]) {
+			this.contents[0].w = w;
+		}
+	}
+	get h(): number {
+		if (this.contents[0]) {
+			return this.contents[0].h;
+		}
+		return 0;
+	}
+	set h(h: number) {
+		if (this.contents[0]) {
+			this.contents[0].h = h;
+		}
 	}
 
 	// Add methods for adding and removing children while updating parameters
