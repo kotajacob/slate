@@ -12,25 +12,31 @@ let die6 = new Stack([
 	new Piece(
 		"/static/img/d6/1.png",
 		50, 50,
+		50, 50,
 	),
 	new Piece(
 		"/static/img/d6/2.png",
+		50, 50,
 		50, 50,
 	),
 	new Piece(
 		"/static/img/d6/3.png",
 		50, 50,
+		50, 50,
 	),
 	new Piece(
 		"/static/img/d6/4.png",
+		50, 50,
 		50, 50,
 	),
 	new Piece(
 		"/static/img/d6/5.png",
 		50, 50,
+		50, 50,
 	),
 	new Piece(
 		"/static/img/d6/6.png",
+		50, 50,
 		50, 50,
 	),
 ]);

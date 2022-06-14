@@ -10,15 +10,17 @@ canvas.height = window.innerHeight;
 
 let tableContents: (Piece|Stack)[] = [];
 
+let offset = new Vector2(0, 0);
+let grabbed: (null|Piece|Stack) = null;
+let pan = new Vector2(0, 0);
+let zoom = 1;
+
+
 function populateTable() {
 	tableContents = ws.get();
 }
 
 populateTable();
-
-let offset = new Vector2(0, 0);
-let grabbed: (null|Piece|Stack) = null;
-
 main();
 
 function render() {
@@ -27,7 +29,13 @@ function render() {
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
 	for (let tableItem of tableContents) {
-		context.drawImage(tableItem.image, tableItem.x, tableItem.y);
+		context.drawImage(
+			tableItem.image,
+			tableItem.x - pan.x,
+			tableItem.y - pan.y,
+			tableItem.w * zoom,
+			tableItem.h * zoom,
+		);
 	}
 
 	if (grabbed) {
