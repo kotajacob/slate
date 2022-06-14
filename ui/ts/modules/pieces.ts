@@ -6,10 +6,17 @@ import { Vector2, Rectangle } from "./area_tools";
 export class Piece {
 	url: string;
 	position: Vector2;
-	boundary: Rectangle;
-	image: HTMLImageElement;
 	w: number;
 	h: number;
+	boundary: Rectangle;
+	boundaryPath: Path2D;
+	image: HTMLImageElement;
+
+	#imageIsLoaded: Promise<unknown> = Promise.resolve();
+	#wIsSet = Promise.resolve();
+	#hIsSet = Promise.resolve();
+	#boundaryWIsSet = Promise.resolve();
+	#boundaryHIsSet = Promise.resolve();
 
 	// Add this.x and this.y which reference this.position
 	get x() {
@@ -25,9 +32,43 @@ export class Piece {
 		this.position.y = y;
 	}
 
+	async boundaryPathGenerate() {
+		this.boundaryPath = new Path2D();
+		await this.#boundaryWIsSet;
+		await this.#boundaryHIsSet;
+		this.boundaryPath.rect(
+			this.x + this.boundary.x,
+			this.y + this.boundary.y,
+			this.boundary.w,
+			this.boundary.h,
+		);
+	}
+
+	// Default values for h, w, and boundary
+	async #wSetDefault() {
+		await this.#imageIsLoaded;
+		this.w = this.image.naturalWidth;
+		return;
+	}
+	async #hSetDefault() {
+		await this.#imageIsLoaded;
+		this.h = this.image.naturalHeight;
+		return;
+	}
+	async #boundaryWSetDefault() {
+		await this.#wIsSet;
+		this.boundary.w = this.w
+		return;
+	}
+	async #boundaryHSetDefault() {
+		await this.#hIsSet;
+		this.boundary.h = this.h
+		return;
+	}
+
 	/**
-	 * Create a piece  
-	 * Unset or 0 (w)idth and (h)eight will use the image defaults  
+	 * Create a piece
+	 * Unset or 0 (w)idth and (h)eight will use the image defaults
 	 * Unset or 0 boundaries will default to 0, 0, (w)idth, (h)eight
 	 */
 	constructor(
@@ -44,29 +85,33 @@ export class Piece {
 		this.url = url;
 		this.image = new Image();
 		this.image.src = this.url;
+		let image = this.image;
+		this.#imageIsLoaded = new Promise(function (resolve) {
+			image.onload = resolve;
+		});
 		this.position = new Vector2(x, y);
-		if (w) {
-			this.w = w;
-		} else {
-			this.w = this.image.naturalWidth;
-		}
-		if (h) {
-			this.h = h;
-		} else {
-			this.h = this.image.naturalHeight;
-		}
+		this.w = w;
+		this.h = h;
 		this.boundary = {
 			x: xBoundary,
 			y: yBoundary,
 			w: wBoundary,
 			h: hBoundary,
 		}
+		this.boundaryPath = new Path2D();
+		if (this.w === 0) {
+			this.#wIsSet = this.#wSetDefault();
+		}
+		if (this.h === 0) {
+			this.#hIsSet = this.#hSetDefault();
+		}
 		if (this.boundary.w === 0) {
-			this.boundary.w = this.w;
+			this.#boundaryWIsSet = this.#boundaryWSetDefault();
 		}
 		if (this.boundary.h === 0) {
-			this.boundary.h = this.h;
+			this.#boundaryHIsSet = this.#boundaryHSetDefault();
 		}
+		this.boundaryPathGenerate();
 	}
 }
 
@@ -76,9 +121,10 @@ export class Piece {
  */
 export class Stack {
 	contents: (Piece|Stack)[];
-	position: Vector2 = new Vector2(0, 0);
+	position = new Vector2(0, 0);
 	boundary: Rectangle = {x: 0, y: 0, w: 0, h: 0};
-	image: HTMLImageElement = new Image();
+	boundaryPath = new Path2D();
+	image = new Image();
 
 	// Pass url through to first contents child
 	get url(): string {
@@ -131,6 +177,15 @@ export class Stack {
 		}
 	}
 
+	async boundaryPathGenerate() {
+		if (this.contents[0]) {
+			await this.contents[0].boundaryPathGenerate();
+			this.boundaryPath = this.contents[0].boundaryPath;
+		} else {
+			this.boundaryPath = new Path2D();
+		}
+	}
+
 	// Add methods for adding and removing children while updating parameters
 	addChild(child: (Piece|Stack), append: boolean = false) {
 		if (append) {
@@ -153,11 +208,13 @@ export class Stack {
 		if (this.contents.length > 0) {
 			this.position = this.contents[0].position;
 			this.boundary = this.contents[0].boundary;
-			this.image    = this.contents[0].image;
+			this.boundaryPath = this.contents[0].boundaryPath;
+			this.image = this.contents[0].image;
 		} else {
 			this.position = new Vector2(0, 0);
 			this.boundary = {x: 0, y: 0, w: 0, h: 0};
-			this.image    = new Image();
+			this.boundaryPath = new Path2D();
+			this.image = new Image();
 		}
 	}
 

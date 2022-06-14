@@ -37,8 +37,8 @@ let die6 = new Stack([
 
 let serverRes = [die6, knight, rook];
 let ws = {
-	get: async function() {
-		return serverRes;
+	get: function() {
+		return serverRes.slice();
 	},
 };
 

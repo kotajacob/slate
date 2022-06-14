@@ -14,7 +14,7 @@ sass:
 
 ts:
 	npx tsc -noEmit
-	npx esbuild ui/ts/main.ts --sourcemap --minify --bundle --outfile=ui/static/js/main.js
+	npx esbuild ui/ts/main.ts --sourcemap --bundle --outfile=ui/static/js/main.js
 
 clean:
 	rm -f slate

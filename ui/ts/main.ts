@@ -10,30 +10,14 @@ canvas.height = window.innerHeight;
 
 let tableContents: (Piece|Stack)[] = [];
 
-async function populateTable() {
-	tableContents = await ws.get();
-	console.log(tableContents);
+function populateTable() {
+	tableContents = ws.get();
 }
 
 populateTable();
 
-let handle: any = {
-	radius: 20,
-	x: canvas.width / 2,
-	y: canvas.height / 2,
-	boundary: null,
-	grabbed: false,
-};
-
-handle.boundary = new Path2D();
-handle.boundary.rect(
-	handle.x - handle.radius,
-	handle.y - handle.radius,
-	handle.radius * 2,
-	handle.radius * 2
-);
-
 let offset = new Vector2(0, 0);
+let grabbed: (null|Piece|Stack) = null;
 
 main();
 
@@ -45,51 +29,34 @@ function render() {
 	for (let tableItem of tableContents) {
 		context.drawImage(tableItem.image, tableItem.x, tableItem.y);
 	}
-	context.fillStyle = "#333333";
-	context.beginPath();
-	context.arc(handle.x, handle.y, handle.radius, 0, Math.PI * 2, false);
-	context.fill();
 
-	if (handle.grabbed) {
+	if (grabbed) {
 		context.strokeStyle = "#cccc44";
-		context.stroke(handle.boundary);
+		context.stroke(grabbed.boundaryPath);
 	}
 }
 
 canvas.addEventListener("mousedown", function (event) {
-	if (context.isPointInPath(handle.boundary, event.offsetX, event.offsetY)) {
-		canvas.addEventListener("mousemove", onMouseMove);
-		canvas.addEventListener("mouseup", onMouseUp);
-		offset.x = event.clientX - handle.x;
-		offset.y = event.clientY - handle.y;
-		handle.boundary = new Path2D();
-		handle.boundary.rect(
-			handle.x - handle.radius,
-			handle.y - handle.radius,
-			handle.radius * 2,
-			handle.radius * 2
-		);
-		handle.grabbed = true;
+	for (let tableItem of tableContents) {
+		if (context.isPointInPath(tableItem.boundaryPath, event.offsetX, event.offsetY)) {
+			offset.x = event.offsetX - tableItem.x;
+			offset.y = event.offsetY - tableItem.y;
+			grabbed = tableItem;
+		}
 	}
 });
 
-function onMouseMove(event: MouseEvent) {
-	handle.x = event.clientX - offset.x;
-	handle.y = event.clientY - offset.y;
-	handle.boundary = new Path2D();
-	handle.boundary.rect(
-		handle.x - handle.radius,
-		handle.y - handle.radius,
-		handle.radius * 2,
-		handle.radius * 2
-	);
-}
+canvas.addEventListener("mousemove", function (event: MouseEvent) {
+	if (grabbed) {
+		grabbed.x = event.clientX - offset.x;
+		grabbed.y = event.clientY - offset.y;
+		grabbed.boundaryPathGenerate();
+	}
+});
 
-function onMouseUp(event: MouseEvent) {
-	canvas.removeEventListener("mousemove", onMouseMove);
-	canvas.removeEventListener("mouseup", onMouseUp);
-	handle.grabbed = false;
-}
+canvas.addEventListener("mouseup", function (event: MouseEvent) {
+	grabbed = null;
+});
 
 function main() {
 	render();
