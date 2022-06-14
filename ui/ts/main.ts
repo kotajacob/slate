@@ -11,10 +11,14 @@ canvas.height = window.innerHeight;
 let tableContents: (Piece|Stack)[] = [];
 
 let offset = new Vector2(0, 0);
-let grabbed: (null|Piece|Stack) = null;
 let pan = new Vector2(0, 0);
+let panOrigin = new Vector2(0, 0);
 let zoom = 1;
+let zoomOrigin = 0;
 
+let grabbed: (null|Piece|Stack) = null;
+let panning = false;
+let zooming = false;
 
 function populateTable() {
 	tableContents = ws.get();
@@ -44,7 +48,14 @@ function render() {
 	}
 }
 
-canvas.addEventListener("mousedown", function (event) {
+canvas.addEventListener("contextmenu", function(event) {
+	event.preventDefault();
+	panOrigin.x = event.offsetX;
+	panOrigin.y = event.offsetY;
+	panning = true;
+});
+
+canvas.addEventListener("mousedown", function(event) {
 	for (let tableItem of tableContents) {
 		if (context.isPointInPath(tableItem.boundaryPath, event.offsetX, event.offsetY)) {
 			offset.x = event.offsetX - tableItem.x;
@@ -54,16 +65,23 @@ canvas.addEventListener("mousedown", function (event) {
 	}
 });
 
-canvas.addEventListener("mousemove", function (event: MouseEvent) {
+canvas.addEventListener("mousemove", function(event: MouseEvent) {
 	if (grabbed) {
-		grabbed.x = event.clientX - offset.x;
-		grabbed.y = event.clientY - offset.y;
+		grabbed.x = event.offsetX - offset.x;
+		grabbed.y = event.offsetY - offset.y;
 		grabbed.boundaryPathGenerate();
+	}
+	if (panning) {
+		pan.x += panOrigin.x - event.offsetX;
+		pan.y += panOrigin.y - event.offsetY;
+		panOrigin.x = event.offsetX;
+		panOrigin.y = event.offsetY;
 	}
 });
 
-canvas.addEventListener("mouseup", function (event: MouseEvent) {
+canvas.addEventListener("mouseup", function(event: MouseEvent) {
 	grabbed = null;
+	panning = false;
 });
 
 function main() {
