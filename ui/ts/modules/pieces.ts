@@ -7,13 +7,12 @@ import { Vector2, Rectangle } from "./area_tools";
 export abstract class GameObject {
 	position = new Vector2(0, 0);
 	boundary: Rectangle = {x: 0, y: 0, w: 0, h: 0};
-	boundaryPath = new Path2D();
 	image = new Image();
 
 	abstract url: string;
 	abstract w: number;
 	abstract h: number;
-	abstract boundaryPathGenerate(): void;
+	abstract boundaryPath(offset: Vector2): Path2D;
 
 	// Add this.x and this.y which reference this.position
 	get x() {
@@ -41,19 +40,18 @@ export class Piece extends GameObject {
 	#imageIsLoaded: Promise<unknown> = Promise.resolve();
 	#wIsSet = Promise.resolve();
 	#hIsSet = Promise.resolve();
-	#boundaryWIsSet = Promise.resolve();
 	#boundaryHIsSet = Promise.resolve();
+	#boundaryWIsSet = Promise.resolve();
 
-	async boundaryPathGenerate() {
-		this.boundaryPath = new Path2D();
-		await this.#boundaryWIsSet;
-		await this.#boundaryHIsSet;
-		this.boundaryPath.rect(
-			this.x + this.boundary.x,
-			this.y + this.boundary.y,
+	boundaryPath(offset: Vector2): Path2D {
+		let path = new Path2D();
+		path.rect(
+			this.x + this.boundary.x + offset.x,
+			this.y + this.boundary.y + offset.y,
 			this.boundary.w,
 			this.boundary.h,
 		);
+		return path;
 	}
 
 	// Default values for h, w, and boundary
@@ -111,7 +109,6 @@ export class Piece extends GameObject {
 			w: wBoundary,
 			h: hBoundary,
 		}
-		this.boundaryPath = new Path2D();
 		if (this.w === 0) {
 			this.#wIsSet = this.#wSetDefault();
 		}
@@ -124,7 +121,6 @@ export class Piece extends GameObject {
 		if (this.boundary.h === 0) {
 			this.#boundaryHIsSet = this.#boundaryHSetDefault();
 		}
-		this.boundaryPathGenerate();
 	}
 }
 
@@ -172,12 +168,12 @@ export class Stack extends GameObject {
 		}
 	}
 
-	async boundaryPathGenerate() {
+	// Pass boundary path to first contents child
+	boundaryPath(offset: Vector2): Path2D {
 		if (this.contents[0]) {
-			await this.contents[0].boundaryPathGenerate();
-			this.boundaryPath = this.contents[0].boundaryPath;
+			return this.contents[0].boundaryPath(offset);
 		} else {
-			this.boundaryPath = new Path2D();
+			return new Path2D();
 		}
 	}
 
@@ -203,12 +199,10 @@ export class Stack extends GameObject {
 		if (this.contents.length > 0) {
 			this.position = this.contents[0].position;
 			this.boundary = this.contents[0].boundary;
-			this.boundaryPath = this.contents[0].boundaryPath;
 			this.image = this.contents[0].image;
 		} else {
 			this.position = new Vector2(0, 0);
 			this.boundary = {x: 0, y: 0, w: 0, h: 0};
-			this.boundaryPath = new Path2D();
 			this.image = new Image();
 		}
 	}

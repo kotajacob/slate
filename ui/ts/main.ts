@@ -44,7 +44,7 @@ function render() {
 
 	if (grabbed) {
 		context.strokeStyle = "#cccc44";
-		context.stroke(grabbed.boundaryPath);
+		context.stroke(grabbed.boundaryPath(pan.negative()));
 	}
 }
 
@@ -57,7 +57,7 @@ canvas.addEventListener("contextmenu", function(event) {
 
 canvas.addEventListener("mousedown", function(event) {
 	for (let tableItem of tableContents) {
-		if (context.isPointInPath(tableItem.boundaryPath, event.offsetX, event.offsetY)) {
+		if (context.isPointInPath(tableItem.boundaryPath(pan.negative()), event.offsetX, event.offsetY)) {
 			offset.x = event.offsetX - tableItem.x;
 			offset.y = event.offsetY - tableItem.y;
 			grabbed = tableItem;
@@ -69,7 +69,6 @@ canvas.addEventListener("mousemove", function(event: MouseEvent) {
 	if (grabbed) {
 		grabbed.x = event.offsetX - offset.x;
 		grabbed.y = event.offsetY - offset.y;
-		grabbed.boundaryPathGenerate();
 	}
 	if (panning) {
 		pan.x += panOrigin.x - event.offsetX;

@@ -43,6 +43,9 @@ export class Vector2 {
 		}
 		return radianDirection;
 	}
+	negative() {
+		return new Vector2(-this.x, -this.y);
+	}
 	constructor(x: number, y: number) {
 		this.x = x;
 		this.y = y;
