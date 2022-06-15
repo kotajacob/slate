@@ -3,7 +3,10 @@ import { Piece, Stack } from "./modules/pieces";
 import { ws } from "./modules/ws_tools";
 
 let canvas = document.getElementById("table-main") as HTMLCanvasElement;
-let context = canvas.getContext("2d") as CanvasRenderingContext2D;
+let context = canvas.getContext(
+	"2d",
+	{alpha: false}
+) as CanvasRenderingContext2D;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -28,17 +31,16 @@ populateTable();
 main();
 
 function render() {
-	context.clearRect(0, 0, canvas.width, canvas.height);
 	context.fillStyle = "#448866";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
 	for (let tableItem of tableContents) {
 		context.drawImage(
 			tableItem.image,
-			tableItem.x - pan.x,
-			tableItem.y - pan.y,
-			tableItem.w * zoom,
-			tableItem.h * zoom,
+			Math.floor(tableItem.x - pan.x),
+			Math.floor(tableItem.y - pan.y),
+			Math.floor(tableItem.w * zoom),
+			Math.floor(tableItem.h * zoom),
 		);
 	}
 
@@ -85,5 +87,5 @@ canvas.addEventListener("mouseup", function(event: MouseEvent) {
 
 function main() {
 	render();
-	requestAnimationFrame(main);
+	setTimeout(() => requestAnimationFrame(main), 10);
 }
