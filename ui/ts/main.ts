@@ -30,7 +30,14 @@ function populateTable() {
 populateTable();
 main();
 
+let frames = 0;
+setInterval(function() {
+	console.log(frames);
+	frames = 0;
+}, 1000);
+
 function render() {
+	frames ++;
 	context.fillStyle = "#448866";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
