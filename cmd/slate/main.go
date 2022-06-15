@@ -28,12 +28,7 @@ func main() {
 
 	fileServer := http.FileServer(http.Dir("./ui/static"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-
 	mux.HandleFunc("/", s.home)
-	mux.HandleFunc("/new/user", s.newUser)
-	mux.HandleFunc("/new/book", s.newBook)
-	mux.HandleFunc("/new/club", s.newClub)
-	mux.HandleFunc("/new/post", s.newPost)
 
 	srv := &http.Server{
 		Addr:     *addr,
