@@ -12,7 +12,7 @@ export abstract class GameObject {
 	abstract url: string;
 	abstract w: number;
 	abstract h: number;
-	abstract boundaryPath(offset: Vector2): Path2D;
+	abstract boundaryPath(offset: Vector2, zoom: number): Path2D;
 
 	// Add this.x and this.y which reference this.position
 	get x() {
@@ -43,13 +43,13 @@ export class Piece extends GameObject {
 	#boundaryHIsSet = Promise.resolve();
 	#boundaryWIsSet = Promise.resolve();
 
-	boundaryPath(offset: Vector2): Path2D {
+	boundaryPath(offset: Vector2, zoom: number): Path2D {
 		let path = new Path2D();
 		path.rect(
-			this.x + this.boundary.x + offset.x,
-			this.y + this.boundary.y + offset.y,
-			this.boundary.w,
-			this.boundary.h,
+			(this.x + this.boundary.x) * zoom + offset.x,
+			(this.y + this.boundary.y) * zoom + offset.y,
+			this.boundary.w * zoom,
+			this.boundary.h * zoom,
 		);
 		return path;
 	}
@@ -169,9 +169,9 @@ export class Stack extends GameObject {
 	}
 
 	// Pass boundary path to first contents child
-	boundaryPath(offset: Vector2): Path2D {
+	boundaryPath(offset: Vector2, zoom: number): Path2D {
 		if (this.contents[0]) {
-			return this.contents[0].boundaryPath(offset);
+			return this.contents[0].boundaryPath(offset, zoom);
 		} else {
 			return new Path2D();
 		}
